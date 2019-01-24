@@ -44,7 +44,7 @@ def flick(start, finish):
 @skywriter.airwheel()
 def spinny(delta):
     global some_value
-    some_value += delta * 2
+    some_value += delta * 3
 
     if some_value < 0:
         some_value = 0
@@ -58,7 +58,11 @@ def spinny(delta):
 
 @skywriter.tap()
 def tap(position):
-  subprocess.call("xset s activate -display :0", shell = True)
-  to_node("tap", position)
+     monitor_status = str(subprocess.check_output("DISPLAY=:0 xset q | grep Monitor", shell = True))
+
+     if "On" in monitor_status :
+         # to_node("tap", position)
+         print("no pause")
+     subprocess.call("DISPLAY=:0 xset dpms force on", shell = True)
 
 signal.pause()
