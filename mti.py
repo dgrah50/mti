@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import skywriter
+import serial
 import signal
 import json
 import sys
@@ -23,14 +23,24 @@ def to_node(type, message):
         print("volume: " + volume)
         requests.get("http://localhost:5005/Living%20Room/volume/" + volume)
 
+def handle_data(reading):
+    if reading.startswith("FLICK"):
+        flick( reading.split("_")[1].lower(), reading.split("_")[2].lower())
+    elif reading.startswith("AIRWHEEL"):
+        spinny(reading)
+    elif reading.startswith("TOUCH"):
+        tap("CENTER")
+
+
 state = requests.get("http://localhost:5005/Living%20Room/state").json()
 new_volume = state["volume"]
 some_value = new_volume * 100
-
 print("Volume " + str(new_volume) + " fetched from sonos")
 print("Ready for input...")
+while True:
+    reading = ser.readline().decode()
+    handle_data(reading)
 
-@skywriter.flick()
 def flick(start, finish):
     if start == "east" and finish == "west":
         to_node("gesture", "left")
@@ -41,7 +51,7 @@ def flick(start, finish):
     if start == "south" and finish == "north":
         to_node("gesture", "up")
 
-@skywriter.airwheel()
+
 def spinny(delta):
     global some_value
     some_value += delta * 3
@@ -56,10 +66,8 @@ def spinny(delta):
     elif delta < 0:
         to_node("rotate", "anticlockwise")
 
-@skywriter.tap()
 def tap(position):
      monitor_status = str(subprocess.check_output("DISPLAY=:0 xset q | grep Monitor", shell = True))
-
      if "On" in monitor_status :
          # to_node("tap", position)
          print("no pause")
