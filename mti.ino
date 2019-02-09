@@ -3,6 +3,8 @@
 #include <Wire.h>
 #include <skywriter.h>
 
+
+
 #define PIN_TRFR  7    // TRFR Pin of Skywriter
 #define PIN_RESET 6    // Reset Pin of Skywriter
 
@@ -21,32 +23,38 @@ void setup() {
 
 void loop() {
   Skywriter.poll(); // Poll for any updates from Skywriter
+  if( touch_timeout > 0 ) touch_timeout--; 
 }
 
 void gesture(unsigned char type){
   switch (type){
     case SW_FLICK_WEST_EAST:
-      Serial.print("FLICK_WEST_EAST")
+      Serial.println("FLICK_WEST_EAST");
       break;
 
     case SW_FLICK_EAST_WEST:
-      Serial.print("FLICK_EAST_WEST")
+      Serial.println("FLICK_EAST_WEST");
       break;
 
     case SW_FLICK_SOUTH_NORTH:
-      Serial.print("FLICK_SOUTH_NORTH")
+      Serial.println("FLICK_SOUTH_NORTH");
       break;
 
     case SW_FLICK_NORTH_SOUTH:
-      Serial.print("FLICK_NORTH_SOUTH")
+      Serial.println("FLICK_NORTH_SOUTH");
       break;
   }
 }
 
 void airwheel(int delta){
-  Serial.print("AIRWHEEL"+delta);
+  Serial.println(delta);
 }
 
 void touch(unsigned char type){
-  Serial.println("TOUCH");
+//  if( touch_timeout > 0 ) {
+    return;
+//  } else {
+//    touch_timeout=40000;
+//  Serial.println("TOUCH");
+//  }
 }
